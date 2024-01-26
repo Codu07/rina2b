@@ -1,0 +1,19 @@
+llm:
+  - name: chatglm_default
+    type: chatglm3
+    path: /Users/bytedance/workspace/rina2b
+memory:
+  - name: memory_default
+    longterm:
+      type: vector
+      path: /Users/bytedance/workspace/rina2b/memory/longterm
+    shotterm:
+      limit: 50
+agent:
+  - name: default
+    llm: chatglm_default
+    memory: memory_default
+    tools:
+      - search_web
+rina:
+  agent: default
