@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+from llm import LLM
+from llm import LLMManager
+
 
 class Agent(object):
   def __init__(self, name : str, config : dict):
@@ -8,5 +10,5 @@ class Agent(object):
     return "I'm an AI agent, I can't chat yet!"
 
 
-def build_agent():
+def build_agent(name : str, llms : LLM, config : dict):
   return Agent("test", {})

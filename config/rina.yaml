@@ -1,7 +1,12 @@
 llm:
-  - name: chatglm_default
+  - 
+    name: chatglm_default
     type: chatglm3
     path: /Users/bytedance/workspace/rina2b
+  - 
+    name: chatglm4
+    type: chatglm4
+    api_key: your_api_key
 memory:
   - name: memory_default
     longterm:

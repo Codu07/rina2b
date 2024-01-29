@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from rina import Rina
 from pydantic import BaseModel
+from rina import Rina
+
 
 class Message(BaseModel):
   content: str
