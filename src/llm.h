@@ -47,6 +47,8 @@ public:
 
   bool register_llm(const std::string& name, LLM* llm);
 
+  LLM* get_llm(const std::string& name);
+
 private:
   LLMManager() {}
   LLMManager(const LLMManager&) {}

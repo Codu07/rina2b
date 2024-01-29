@@ -11,7 +11,7 @@ memory:
   - name: memory_default
     longterm:
       type: vector
-      path: /Users/bytedance/workspace/rina2b/memory/longterm
+      path: /Users/bytedance/workspace/rina3b/memory/longterm
     shotterm:
       limit: 50
 agent:

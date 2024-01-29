@@ -47,17 +47,42 @@ int LLMManager::init(const Configure& config) {
     if (type.compare(LLM_TYPE_CHATGLM4) == 0) {
       ChatGLM4* chatglm4 = new ChatGLM4();
       chatglm4->init(item);
-      _llms[name] = chatglm4;
+      this->register_llm(name, chatglm4);
       continue;
     }
 
-    spdlog::warn(fmt::format("unknown llm type: {}", type));
+    spdlog::warn(fmt::format("{} unknown llm type: {}", name, type));
   }
  
   return 0;
 }
 
+bool LLMManager::register_llm(const std::string& name, LLM* llm) {
+  auto it = _llms.find(name);
+  if (it != _llms.end()) {
+    return false;
+  }
+
+  _llms[name] = llm;
+  return true;
+}
+
+LLM* LLMManager::get_llm(const std::string& name) {
+  auto it = _llms.find(name);
+  if (it == _llms.end()) {
+    return nullptr;
+  }
+
+  return _llms[name];
+}
+
 int LLMManager::destroy() {
+  for (auto it : _llms) {
+    delete it.second;
+    it.second = nullptr;
+  }
+
+  _llms.clear();
   return 0;
 }
 

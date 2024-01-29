@@ -17,6 +17,14 @@
 #define RINA_MEMORY_H
 
 namespace rina {
+
+class Memory {
+public:
+  Memory();
+
+  ~Memory();
+}; // class Memory
+
 } // namespace rina
 
 #endif  //RINA_MEMORY_H

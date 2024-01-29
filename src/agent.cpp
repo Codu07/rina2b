@@ -6,28 +6,39 @@
  **************************************************************************/
  
  /**
- * @file llm_chatglm4.cpp
+ * @file agent.cpp
  * @author wangtao(wtzhuque@163.com)
- * @date 2024/01/29 16:32:18
+ * @date 2024/01/29 22:04:37
  * @version $Revision$ 
  * @brief 
  *  
  **/
 
-#include "llm_chatglm4.h"
+#include "agent.h"
+namespace {
+::rina::AgentManager* g_ins = nullptr;
+}
 
 namespace rina {
 
-static int build_prompt() {
+AgentManager* AgentManager::instance() {
+  if (g_ins == nullptr) {
+    g_ins = new AgentManager();
+  }
+
+  return g_ins;
+}
+
+int AgentManager::init(const Configure& config) {
   return 0;
 }
 
-int ChatGLM4::init(const Configure& config) {
+int AgentManager::destroy() {
   return 0;
 }
-  
-Message* ChatGLM4::chat(const Message* msg) {
-  return nullptr;
+
+int AgentManager::register_agent(const std::string& name, Agent* agent) {
+  return 0;
 }
 
 } // namespace rina

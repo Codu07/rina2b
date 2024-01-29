@@ -16,13 +16,22 @@
 #ifndef RINA_RINA_H
 #define RINA_RINA_H
 
+#include "agent.h"
+
 namespace rina {
 
-class Rina {
+class Rina : public Agent {
 public:
-    Rina() {}
+    Rina()
+      : Agent("Rina2b") {}
 
-    ~Rina() {}
+    virtual ~Rina() {}
+
+    virtual int init(Memory* memory, LLM* llm, const std::string& persona);
+
+    virtual int destroy();
+
+    virtual Message* chat(const Message* msg);
 }; // class Rina
 
 } // namespace rina

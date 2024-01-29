@@ -32,8 +32,6 @@ public:
   static APIServer* instance();
 
 public:
-  APIServer() {}
-
   ~APIServer() {}
 
   int init(const Configure& config);
@@ -52,6 +50,10 @@ public:
              const std::map<std::string, std::string>& params,
              const std::string& data,
              std::string* response);
+
+private:
+  APIServer() {}
+  APIServer(const APIServer&) {}
 
 private:
   WFHttpServer* _server {nullptr};
