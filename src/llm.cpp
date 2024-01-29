@@ -29,12 +29,12 @@ const std::string LLM_TYPE_CHATGLM4 = "chatglm4";
 
 namespace rina {
 
-LLMManager& LLMManager::get_instance() {
+LLMManager* LLMManager::instance() {
   if (g_ins == nullptr) {
     g_ins = new LLMManager();
   }
 
-  return *g_ins;
+  return g_ins;
 }
 
 int LLMManager::init(const Configure& config) {

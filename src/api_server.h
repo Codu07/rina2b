@@ -23,10 +23,14 @@
 #include <workflow/WFFacilities.h>
 
 #include "configure.h"
+#include "api_handler.h"
 
 namespace rina {
 
 class APIServer {
+public:
+  static APIServer* instance();
+
 public:
   APIServer() {}
 
@@ -34,17 +38,26 @@ public:
 
   int init(const Configure& config);
 
-  int start();
+  int start(int port);
 
   int wait_until_exit();
 
   int destroy();
 
 public:
-  static process(WFHttpTask* task);
+  static void process(WFHttpTask* task);
+
+  int handle(const std::string& method,
+             const std::string& uri,
+             const std::map<std::string, std::string>& params,
+             const std::string& data,
+             std::string* response);
 
 private:
   WFHttpServer* _server {nullptr};
+
+private:
+  std::map<std::string, APIHandler*> _handlers;
 }; // class APIServer
 
 } // namespace rina

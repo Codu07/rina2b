@@ -36,7 +36,7 @@ public:
 
 class LLMManager {
 public:
-  static LLMManager& get_instance();
+  static LLMManager* instance();
 
 public:
   ~LLMManager() {}
