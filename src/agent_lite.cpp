@@ -34,13 +34,13 @@ int LiteAgent::destroy() {
   return 0;
 }
 
-Message* LiteAgent::chat(const Message* msg) {
+message_ptr_t LiteAgent::chat(message_ptr_t /*msg*/) {
   if (_llm == nullptr || _memory == nullptr) {
     spdlog::error("agent [{}] not initialized", this->name());
-    return nullptr;
+    return message_ptr_t();
   }
 
-  return nullptr;
+  return message_ptr_t();
 }
 
 } // namespace rina

@@ -60,8 +60,10 @@ int Rina::destroy() {
   return 0;
 }
 
-Message* Rina::chat(const Message* msg) {
-  return nullptr;
+message_ptr_t Rina::chat(message_ptr_t msg) {
+  auto response = std::make_shared<ChatMessage>();
+  response->set("rina", "hello");
+  return std::dynamic_pointer_cast<Message>(response);
 }
 
 } // namespace rina

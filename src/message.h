@@ -17,6 +17,7 @@
 #define RINA_MESSAGE_H
 
 #include <string>
+#include <memory>
 
 namespace rina {
 
@@ -30,6 +31,8 @@ public:
 
   virtual std::string to_string() = 0;
 }; // class Message
+
+using message_ptr_t = std::shared_ptr<Message>;
 
 class SystemMessage : public Message {
 public:
@@ -45,6 +48,13 @@ public:
 
 class ChatMessage : public Message {
 public:
+  ChatMessage() {}
+  
+  ChatMessage(const std::string& role, const std::string& content)
+    : _role(role), _content(content) {}
+
+  virtual ~ChatMessage() {}
+
   virtual const std::string& type() {
     static const std::string _type = "chat";
     return _type;

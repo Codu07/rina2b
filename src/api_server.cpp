@@ -48,10 +48,22 @@ void APIServer::process(WFHttpTask* task) {
   auto response = task->get_resp();
   auto seq = task->get_task_seq();
 
+  // parse request
   std::string method = request->get_method();
   std::string uri = request->get_request_uri();
   std::map<std::string, std::string> params;
   std::string data;
+
+  if (method == "POST") { 
+    // parse body  
+    const void* body;
+    size_t body_len;
+    request->get_parsed_body(&body, &body_len);
+    if (body_len > 0) {
+      data = std::string(static_cast<const char*>(body), body_len);
+    }
+  }
+
   std::string response_data;
 
   APIServer* api_server = APIServer::instance();

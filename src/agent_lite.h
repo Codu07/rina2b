@@ -30,7 +30,7 @@ public:
 
   virtual int destroy();
 
-  virtual Message* chat(const Message* msg);
+  virtual message_ptr_t chat(message_ptr_t msg);
 
 private:
   std::string _persona {""};

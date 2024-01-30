@@ -48,6 +48,11 @@ public:
     return -1;
   }
 
+  virtual message_ptr_t chat(message_ptr_t msg) {
+    spdlog::error("agent [{}] not implemented", this->name());
+    return nullptr;
+  }
+
   virtual Message* chat(const Message* msg) {
     spdlog::error("agent [{}] not implemented", this->name());
     return nullptr;
