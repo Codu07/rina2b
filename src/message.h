@@ -46,6 +46,8 @@ public:
   }
 }; // class SystemMessage
 
+using system_message_ptr_t = std::shared_ptr<SystemMessage>;
+
 class ChatMessage : public Message {
 public:
   ChatMessage() {}
@@ -82,6 +84,8 @@ private:
   std::string _content;
 }; // class ChatMessage
 
+using chat_message_ptr_t = std::shared_ptr<ChatMessage>;
+
 class FunctionMessage : public Message {
 public:
   virtual const std::string& type() {
@@ -93,6 +97,8 @@ public:
     return "not implemented";
   }
 }; // class FunctionMessage
+
+using function_message_ptr_t = std::shared_ptr<FunctionMessage>;
 
 } // namespace rina
 

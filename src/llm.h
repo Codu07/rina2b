@@ -19,6 +19,7 @@
 #include <string>
 
 #include "configure.h"
+#include "context.h"
 #include "message.h"
 
 namespace rina {
@@ -31,7 +32,7 @@ public:
     return 0;
   }
 
-  virtual Message* chat(const Message* msg) = 0;
+  virtual message_ptr_t chat(context_ptr_t ctx, message_ptr_t msg) = 0;
 }; // class LLM
 
 class LLMManager {

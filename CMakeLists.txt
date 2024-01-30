@@ -63,6 +63,20 @@ if((NOT WORKFLOW_INCLUDE_PATH) OR (NOT WORKFLOW_LIB))
 endif()
 include_directories(${WORKFLOW_INCLUDE_PATH})
 
+# look for nlohmann json
+find_path(JSON_INCLUDE_PATH NAMES nlohmann/json.hpp)
+if (NOT JSON_INCLUDE_PATH)
+    message(FATAL_ERROR "Failed to find nlohmann json")
+endif()
+include_directories(${JSON_INCLUDE_PATH})
+
+# look for jwt-cpp
+find_path(JWT_INCLUDE_PATH NAMES jwt-cpp/jwt.h)
+if(NOT JWT_INCLUDE_PATH)
+    message(FATAL_ERROR "Failed to find jwt-cpp")
+endif()
+include_directories(${JWT_INCLUDE_PATH})
+
 # look for openssl
 find_package(OpenSSL)
 include_directories(${OPENSSL_INCLUDE_DIR})

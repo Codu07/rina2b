@@ -16,14 +16,25 @@
 #ifndef RINA_CONTEXT_H
 #define RINA_CONTEXT_H
 
+#include <memory>
+#include <string>
+
+#include "message.h"
+
 namespace rina {
 
 class Context {
 public:
-    Context() {}
+  Context() {}
 
-    ~Context() {}
+  ~Context() {}
+
+private:
+  system_message_ptr_t _system_message;
+  std::vector<message_ptr_t> _history; 
 }; // class Context
+
+using context_ptr_t = std::shared_ptr<Context>;
 
 } // namespace rina
 

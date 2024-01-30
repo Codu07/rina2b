@@ -26,7 +26,7 @@ public:
 
   virtual int init(const Configure& config);
   
-  virtual Message* chat(const Message* msg);
+  virtual message_ptr_t chat(context_ptr_t ctx, message_ptr_t msg);
 
 private:
   std::string _api_key;
