@@ -16,6 +16,11 @@
 #ifndef RINA_AGENT_H
 #define RINA_AGENT_H
 
+#include <string>
+#include <map>
+
+#include <spdlog/spdlog.h>
+
 #include "memory.h"
 #include "llm.h"
 
@@ -33,11 +38,20 @@ public:
     return _name;
   }
 
-  virtual int init(Memory* memory, LLM* llm, const std::string& persona);
+  virtual int init(Memory* memory, LLM* llm, const std::string& persona) {
+    spdlog::error("agent [{}] not implemented", this->name());
+    return -1;
+  }
 
-  virtual int destroy();
+  virtual int destroy() {
+    spdlog::error("agent [{}] not implemented", this->name());
+    return -1;
+  }
 
-  virtual Message* chat(const Message* msg);
+  virtual Message* chat(const Message* msg) {
+    spdlog::error("agent [{}] not implemented", this->name());
+    return nullptr;
+  }
 
 private:
   std::string _name;
@@ -45,7 +59,7 @@ private:
 
 class AgentManager {
 public:
-  AgentManager* instance();
+  static AgentManager* instance();
 
 public:
   ~AgentManager() {}
@@ -55,6 +69,11 @@ public:
   int destroy();
 
   int register_agent(const std::string& name, Agent* agent);
+
+  Agent* get_agent(const std::string& name);
+
+private:
+  std::map<std::string, Agent*> _agents;
 }; // class AgentManager
 
 } // namespace rina

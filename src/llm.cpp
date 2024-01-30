@@ -42,7 +42,7 @@ int LLMManager::init(const Configure& config) {
     std::string name = item["name"].as<std::string>();
     std::string type = item["type"].as<std::string>();
 
-    spdlog::info(fmt::format("name: {}, type: {}", name, type));
+    spdlog::info(fmt::format("init LLM [{}], type: [{}]", name, type));
 
     if (type.compare(LLM_TYPE_CHATGLM4) == 0) {
       ChatGLM4* chatglm4 = new ChatGLM4();

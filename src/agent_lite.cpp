@@ -6,34 +6,40 @@
  **************************************************************************/
  
  /**
- * @file rina.cpp
+ * @file agent_lite.cpp
  * @author wangtao(wtzhuque@163.com)
- * @date 2024/01/29 12:17:30
+ * @date 2024/01/30 12:03:10
  * @version $Revision$ 
  * @brief 
  *  
  **/
 
-#include "rina.h"
+#include "agent_lite.h"
+
+#include <spdlog/spdlog.h>
 
 namespace rina {
 
-int Rina::init(Memory* memory, LLM* llm, const std::string& persona) {
-  _memory = memory;
+int LiteAgent::init(Memory* memory, LLM* llm, const std::string& persona) {
   _llm = llm;
+  _memory = memory;
   _persona = persona;
-
-  return AgentManager::instance()->register_agent(this->name(), this);
+  return 0;
 }
 
-int Rina::destroy() {
-  _memory = 0;
-  _llm = 0;
+int LiteAgent::destroy() {
+  _llm = nullptr;
+  _memory = nullptr;
   _persona = "";
   return 0;
 }
 
-Message* Rina::chat(const Message* msg) {
+Message* LiteAgent::chat(const Message* msg) {
+  if (_llm == nullptr || _memory == nullptr) {
+    spdlog::error("agent [{}] not initialized", this->name());
+    return nullptr;
+  }
+
   return nullptr;
 }
 

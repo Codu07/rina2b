@@ -5,7 +5,7 @@ project(Rina C CXX)
 set(CMAKE_CXX_STANDARD 20) 
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include(FindProtobuf)
+#include(FindProtobuf)
 
 #include_directories(dep/ggml/include/ggml third_party/ggml/src)
 #add_subdirectory(dep/ggml)

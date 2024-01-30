@@ -1,8 +1,9 @@
 llm:
   - 
     name: chatglm_default
-    type: chatglm3
+    type: chatglm4
     path: /Users/bytedance/workspace/rina2b
+    api_key: your_api_key
   - 
     name: chatglm4
     type: chatglm4
@@ -15,10 +16,14 @@ memory:
     shotterm:
       limit: 50
 agent:
-  - name: default
+  - 
+    name: default
+    persona: lite
     llm: chatglm_default
     memory: memory_default
     tools:
       - search_web
 rina:
-  agent: default
+  persona: rina
+  llm: chatglm4
+  memory: memory_default

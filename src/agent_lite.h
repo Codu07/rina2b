@@ -6,25 +6,25 @@
  **************************************************************************/
  
  /**
- * @file rina.h
+ * @file agent_lite.h
  * @author wangtao(wtzhuque@163.com)
- * @date 2024/01/29 12:07:56
+ * @date 2024/01/30 11:59:23
  * @version $Revision$ 
  * @brief 
  *  
  **/
-#ifndef RINA_RINA_H
-#define RINA_RINA_H
+#ifndef RINA_AGENT_LITE_H
+#define RINA_AGENT_LITE_H
 
 #include "agent.h"
 
 namespace rina {
 
-class Rina : public Agent {
+class LiteAgent : public Agent {
 public:
-  Rina() : Agent("Rina2b") {}
+  LiteAgent(const std::string& name) : Agent(name) {}
 
-  virtual ~Rina() {}
+  virtual ~LiteAgent() {}
 
   virtual int init(Memory* memory, LLM* llm, const std::string& persona);
 
@@ -33,13 +33,13 @@ public:
   virtual Message* chat(const Message* msg);
 
 private:
-  Memory* _memory {nullptr};
-  LLM* _llm {nullptr};
   std::string _persona {""};
-}; // class Rina
+  LLM* _llm {nullptr};
+  Memory* _memory {nullptr};
+}; // class LiteAgent
 
 } // namespace rina
 
-#endif  //RINA_RINA_H
+#endif  //RINA_AGENT_LITE_H
 
 /* vim: set ts=4 sw=4 sts=4 tw=100 */

@@ -53,6 +53,23 @@ public:
   virtual std::string to_string() {
     return "not implemented";
   }
+
+  const std::string& role() const {
+    return _role;
+  }
+
+  const std::string& content() const {
+    return _content;
+  }
+
+  void set(const std::string& role, const std::string& content) {
+    _role = role;
+    _content = content;
+  }
+
+private:
+  std::string _role;
+  std::string _content;
 }; // class ChatMessage
 
 class FunctionMessage : public Message {

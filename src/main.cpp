@@ -22,6 +22,7 @@
 #include <spdlog/spdlog.h>
 
 #include "llm.h"
+#include "agent.h"
 #include "api_server.h"
 
 namespace rina {
@@ -38,6 +39,7 @@ int run(int argc, char** argv) {
   std::ifstream ifs(options["config"].as<std::string>());
   YAML::Node config = YAML::Load(ifs);
 
+  // init llms
   auto llm_config = config["llm"];
   LLMManager* llms = LLMManager::instance();
   int ret = llms->init(llm_config);
@@ -47,10 +49,20 @@ int run(int argc, char** argv) {
   }
   spdlog::info("init llms success");
 
-  auto rina_config = config["rina"];
+  // init memories
 
-  auto api_server_config = config["server"];
-  
+  // init agents
+  auto agent_config = config["agent"];
+  AgentManager* agents = AgentManager::instance();
+  ret = agents->init(agent_config);
+  if (ret != 0) {
+    spdlog::error("failed to init agent");
+    return ret;
+  }
+  spdlog::info("init agents success");
+
+  // init & start api server
+  auto api_server_config = config["server"];  
   APIServer* server = APIServer::instance();
   ret = server->init(api_server_config);
   if (ret != 0) {
@@ -73,6 +85,18 @@ int run(int argc, char** argv) {
   ret = server->destroy();
   if (ret != 0) {
     spdlog::warn("failed to destroy server");
+  }
+
+  // destroy agents
+  ret = agents->destroy();
+  if (ret != 0) {
+    spdlog::warn("failed to destroy agents");
+  }
+
+  // destroy llms
+  ret = llms->destroy();
+  if (ret != 0) {
+    spdlog::warn("failed to destroy llms");
   }
 
   spdlog::info("api server exit");
