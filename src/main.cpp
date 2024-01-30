@@ -24,6 +24,7 @@
 #include "llm.h"
 #include "agent.h"
 #include "api_server.h"
+#include "rina.h"
 
 namespace rina {
 
@@ -49,7 +50,13 @@ int run(int argc, char** argv) {
   }
   spdlog::info("init llms success");
 
-  // init memories
+  auto rina_config = config["rina"]; 
+  ret = Rina::create(rina_config);
+  if (ret != 0) {
+    spdlog::error("failed to create rina");
+    return ret;
+  }
+  spdlog::info("create rina success");
 
   // init agents
   auto agent_config = config["agent"];

@@ -17,10 +17,14 @@
 #define RINA_RINA_H
 
 #include "agent.h"
+#include "configure.h"
 
 namespace rina {
 
 class Rina : public Agent {
+public:
+  static int create(const Configure& config);
+
 public:
   Rina() : Agent("Rina2b") {}
 

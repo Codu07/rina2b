@@ -21,29 +21,14 @@
 
 #include "llm.h"
 #include "memory.h"
-
 #include "agent_lite.h"
+#include "utils.h" 
 
 namespace {
 static ::rina::AgentManager* g_ins = nullptr;
 }
 
 namespace rina {
-
-static const std::string AGENT_PERSONA_PATH = "./config/persona";
-std::string load_persona(const std::string& tag) {
-  std::string path = AGENT_PERSONA_PATH + "/" + tag + ".txt";
-  // Load file from path
-
-  std::ifstream f(path);
-  if (!f.is_open()) {
-    spdlog::error("Failed to load persona file {}", path);
-  }
-
-  std::stringstream ss;
-  ss << f.rdbuf();
-  return ss.str();
-}
 
 AgentManager* AgentManager::instance() {
   if (g_ins == nullptr) {
