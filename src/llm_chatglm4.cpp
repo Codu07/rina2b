@@ -36,7 +36,7 @@ static std::string generate_token(const std::string& apikey, int exp_time) {
 
   std::string id = apikey.substr(0, split_pos);
   std::string secret = apikey.substr(split_pos + 1);
-  spdlog::info("{} : {}", id, secret)
+  spdlog::info("{} : {}", id, secret);
 
   std::time_t ts_now = std::time(nullptr);
   std::time_t ts_exp_time = ts_now + exp_time;

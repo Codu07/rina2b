@@ -32,7 +32,7 @@ endif()
 include_directories(${CXXOPTS_INCLUDE_PATH})
 
 # look for fmtlib
-find_path(FMTLIB_INCLUDE_PATH NAMES fmt/core.h)
+find_path(FMTLIB_INCLUDE_PATH NAMES fmt/format.h)
 find_library(FMT_LIB NAMES libfmt.a fmt)
 if((NOT FMTLIB_INCLUDE_PATH) OR (NOT FMT_LIB))
     message(FATAL_ERROR "Failed to find fmtlib")
@@ -51,7 +51,7 @@ include_directories(${SPDLOG_INCLUDE_PATH})
 find_path(YAMLCPP_INCLUDE_PATH NAMES yaml-cpp/yaml.h)
 find_library(YAMLCPP_LIB NAMES libyaml-cpp.a yaml-cpp)
 if((NOT YAMLCPP_INCLUDE_PATH) OR (NOT YAMLCPP_LIB))
-    message(FATAL_ERROR "Failed to find spdlog")
+    message(FATAL_ERROR "Failed to find yaml-cpp")
 endif()
 include_directories(${YAMLCPP_INCLUDE_PATH})
 
@@ -66,7 +66,7 @@ include_directories(${WORKFLOW_INCLUDE_PATH})
 # look for nlohmann json
 find_path(JSON_INCLUDE_PATH NAMES nlohmann/json.hpp)
 if (NOT JSON_INCLUDE_PATH)
-    message(FATAL_ERROR "Failed to find nlohmann json")
+    message(FATAL_ERROR "Failed to find nlohmann-json")
 endif()
 include_directories(${JSON_INCLUDE_PATH})
 
@@ -95,7 +95,6 @@ set(LIBS
     ${OPENSSL_CRYPTO_LIBRARY}
     ${OPENSSL_SSL_LIBRARY}
     dl
-    z
     )
 
 aux_source_directory(./src DIR_SRCS)
