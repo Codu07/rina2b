@@ -28,9 +28,17 @@ public:
   
   virtual message_ptr_t chat(context_ptr_t ctx, message_ptr_t msg);
 
+  void set_api_key(const std::string& api_key) {
+    _api_key = api_key;
+  }
+
+private:
+  int build_prompt(message_ptr_t msg, std::string* prompt);
+
 private:
   std::string _api_key;
-  std::string _api_path;
+  std::string _token;
+  int64_t _expire_time;
 }; // class ChatGLM4
 
 } // namespace rina

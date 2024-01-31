@@ -54,15 +54,27 @@ int Rina::init(Memory* memory, LLM* llm, const std::string& persona) {
 }
 
 int Rina::destroy() {
-  _memory = 0;
-  _llm = 0;
+  _memory = nullptr;
+  _llm = nullptr;
   _persona = "";
   return 0;
 }
 
 message_ptr_t Rina::chat(message_ptr_t msg) {
-  auto response = std::make_shared<ChatMessage>();
-  response->set("rina", "hello");
+  if (_llm == nullptr || _memory == nullptr) {
+    spdlog::error("LLM or Memory not initialized");
+    return nullptr;
+  }
+
+  context_ptr_t ctx = std::make_shared<Context>();
+
+  auto response = _llm->chat(ctx, msg);
+  if (!response) {
+    spdlog::error("Failed to chat with LLM");
+    return nullptr;
+  }
+
+  //response->set("rina", "hello");
   return std::dynamic_pointer_cast<Message>(response);
 }
 

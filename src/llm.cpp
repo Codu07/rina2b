@@ -45,8 +45,10 @@ int LLMManager::init(const Configure& config) {
     spdlog::info(fmt::format("init LLM [{}], type: [{}]", name, type));
 
     if (type.compare(LLM_TYPE_CHATGLM4) == 0) {
+      std::string api_key = item["api_key"].as<std::string>();
       ChatGLM4* chatglm4 = new ChatGLM4();
       chatglm4->init(item);
+      chatglm4->set_api_key(api_key);
       this->register_llm(name, chatglm4);
       continue;
     }
