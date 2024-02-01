@@ -22,15 +22,15 @@
 namespace rina {
 
 int http_get(const std::string& url,
-             const std::string& headers,
+             const std::map<std::string, std::string>& headers,
              const std::map<std::string, std::string>& params,
              std::string* response);
 
 int http_post(const std::string& url,
-              const std::string& headers,
+             const std::map<std::string, std::string>& headers,
               const std::map<std::string, std::string>& params,
               const std::string& body,
-              std::string& response);
+              std::string* response);
 
 } // namespace rina
 

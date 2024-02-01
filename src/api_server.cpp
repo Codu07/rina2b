@@ -46,7 +46,6 @@ APIServer* APIServer::instance() {
 void APIServer::process(WFHttpTask* task) {
   auto request = task->get_req();
   auto response = task->get_resp();
-  auto seq = task->get_task_seq();
 
   // parse request
   std::string method = request->get_method();

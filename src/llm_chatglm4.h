@@ -38,7 +38,7 @@ private:
 private:
   std::string _api_key;
   std::string _token;
-  int64_t _expire_time;
+  //int64_t _expire_time;
 }; // class ChatGLM4
 
 } // namespace rina

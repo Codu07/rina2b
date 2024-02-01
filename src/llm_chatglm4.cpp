@@ -21,10 +21,15 @@
 
 #include <jwt-cpp/jwt.h>
 #include <spdlog/spdlog.h>
+#include <nlohmann/json.hpp>
+
+#include "http.h"
 
 namespace rina {
 
-static const std::string url = "http://127.0.0.1:8080/chat";
+using json = nlohmann::json;
+
+static const std::string url = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
 
 static std::string generate_token(const std::string& apikey, int exp_time) {
   // parse id & secret from apikey
@@ -68,8 +73,27 @@ message_ptr_t ChatGLM4::chat(context_ptr_t ctx, message_ptr_t msg) {
     spdlog::error("generate token failed");
     return nullptr;
   }
-
+  
   spdlog::info("token: {}", token);
+
+  json req_data;
+  req_data["model"] = "glm-4";
+  req_data["messages"] = json::array();
+  req_data["messages"].push_back(json::object({{"role", "user"}, {"content", prompt}}));
+
+  std::string response;
+  std::map<std::string, std::string> headers =
+    {{"Content-Type", "application/json"}, {"Authorization", token}};
+  std::map<std::string, std::string> params;
+  std::string data = req_data.dump();
+  ret = http_post(url, headers, params, data, &response);
+  if (ret != 0) {
+    spdlog::warn("http get failed: {}", ret);
+    return nullptr;
+  }
+
+  spdlog::info("response: {}", response);
+
   return nullptr;
 }
 
