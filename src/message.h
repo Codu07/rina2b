@@ -44,6 +44,16 @@ public:
   virtual std::string to_string() {
     return "not implemented";
   }
+
+  void set(const std::string& message) {
+    _message = message;
+  }
+
+  const std::string& get() const {
+    return _message;
+  }
+private:
+  std::string _message;
 }; // class SystemMessage
 
 using system_message_ptr_t = std::shared_ptr<SystemMessage>;

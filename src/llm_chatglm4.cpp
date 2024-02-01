@@ -29,7 +29,8 @@ namespace rina {
 
 using json = nlohmann::json;
 
-static const std::string url = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+static const std::string MODEL_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+static const std::string MODEL_ID = "glm-4";
 
 static std::string generate_token(const std::string& apikey, int exp_time) {
   // parse id & secret from apikey
@@ -62,7 +63,7 @@ int ChatGLM4::init(const Configure& config) {
   
 message_ptr_t ChatGLM4::chat(context_ptr_t ctx, message_ptr_t msg) {
   std::string prompt;
-  int ret = build_prompt(msg, &prompt);
+  int ret = build_prompt(ctx, msg, &prompt);
   if (ret != 0) {
     spdlog::error("build prompt failed: {}", ret);
     return nullptr;
@@ -86,20 +87,39 @@ message_ptr_t ChatGLM4::chat(context_ptr_t ctx, message_ptr_t msg) {
     {{"Content-Type", "application/json"}, {"Authorization", token}};
   std::map<std::string, std::string> params;
   std::string data = req_data.dump();
-  ret = http_post(url, headers, params, data, &response);
+  ret = http_post(MODEL_URL, headers, params, data, &response);
   if (ret != 0) {
     spdlog::warn("http get failed: {}", ret);
     return nullptr;
   }
+
+  auto response_msg = std::make_shared<ChatMessage>();
 
   spdlog::info("response: {}", response);
 
   return nullptr;
 }
 
-int ChatGLM4::build_prompt(message_ptr_t msg, std::string* prompt) {
-  // TODO: build prompt
-  prompt->assign("hello");
+int ChatGLM4::build_prompt(context_ptr_t ctx, message_ptr_t msg, std::string* prompt) {
+  json data;
+  data["model"] = MODEL_ID;
+  data["messages"] = json::array();
+  data["messages"].push_back(json::object({{"role", "system"}, {"content", ctx->system_message()->get()}}));
+  for (auto& msg : ctx->history()) {
+    if (msg->type() == "chat") {
+      //data["messages"].push_back(json::object({{"role", "user"}, {"content", msg->get()}}));
+      continue;
+    }
+    if (msg->type() == "system") {
+      continue;
+    }
+  }
+
+  prompt->assign(data.dump());
+  return 0;
+}
+
+int ChatGLM4::parse_response(const std::string& response, message_ptr_t msg) {
   return 0;
 }
 

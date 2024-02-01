@@ -29,6 +29,22 @@ public:
 
   ~Context() {}
 
+  system_message_ptr_t system_message() {
+    return _system_message;
+  }
+
+  void set_system_message(system_message_ptr_t system_message) {
+    _system_message = system_message;
+  }
+
+  std::vector<message_ptr_t>& history() {
+    return _history;
+  }
+
+  void append_history(message_ptr_t message) {
+    _history.emplace_back(message);
+  }
+
 private:
   system_message_ptr_t _system_message;
   std::vector<message_ptr_t> _history; 

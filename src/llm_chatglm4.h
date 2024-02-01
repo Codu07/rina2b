@@ -33,7 +33,9 @@ public:
   }
 
 private:
-  int build_prompt(message_ptr_t msg, std::string* prompt);
+  int build_prompt(context_ptr_t ctx, message_ptr_t msg, std::string* prompt);
+
+  int parse_response(const std::string& response, message_ptr_t msg);
 
 private:
   std::string _api_key;

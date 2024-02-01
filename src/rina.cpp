@@ -67,6 +67,9 @@ message_ptr_t Rina::chat(message_ptr_t msg) {
   }
 
   context_ptr_t ctx = std::make_shared<Context>();
+  system_message_ptr_t sys_msg = std::make_shared<SystemMessage>();
+  sys_msg->set(_persona);
+  ctx->set_system_message(sys_msg);
 
   auto response = _llm->chat(ctx, msg);
   if (!response) {
@@ -74,7 +77,6 @@ message_ptr_t Rina::chat(message_ptr_t msg) {
     return nullptr;
   }
 
-  //response->set("rina", "hello");
   return std::dynamic_pointer_cast<Message>(response);
 }
 
