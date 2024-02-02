@@ -33,6 +33,7 @@ void sig_handler(int sig) {
 namespace rina {
 
 static const std::string API_CHAT = "/api/chat";
+static const std::string API_DOC = "/api/doc";
 static const std::string API_STATUS = "/api/status";
 
 APIServer* APIServer::instance() {
