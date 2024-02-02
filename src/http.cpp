@@ -119,7 +119,6 @@ int http_post(const std::string& url,
     }
 
     if (state != WFT_STATE_SUCCESS) {
-      spdlog::warn("http request failed");
       ctx->error_code = state;
       ctx->error_msg = task->get_error();
       ctx->wait_group.done();

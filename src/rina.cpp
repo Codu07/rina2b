@@ -74,7 +74,6 @@ message_ptr_t Rina::chat(context_ptr_t ctx, message_ptr_t msg) {
   if (!ctx->is_initialized()) {
     system_message_ptr_t sys_msg = std::make_shared<SystemMessage>(_persona);
     ctx->init(sys_msg);
-    spdlog::info("init context with persona: {}", _persona);
   }
 
   auto response = _llm->chat(ctx, msg);

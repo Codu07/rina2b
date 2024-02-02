@@ -89,7 +89,12 @@ int ChatHandler::handle(const std::string& method,
 
   if (response_message->type() == "chat") {
     auto chat_response = std::static_pointer_cast<ChatMessage>(response_message);
-    response->assign(chat_response->content());
+
+    json response_data;
+    response_data["sid"] = session->sid();
+    response_data["role"] = ROLE_AGENT;
+    response_data["message"] = chat_response->content();
+    response->assign(response_data.dump());
   } else {
     spdlog::error("unexpected response message type [{}]", response_message->type());
     return -1;
