@@ -34,7 +34,7 @@ public:
 
   virtual int destroy();
 
-  virtual message_ptr_t chat(message_ptr_t msg);
+  virtual message_ptr_t chat(context_ptr_t ctx, message_ptr_t msg);
 
 private:
   Memory* _memory {nullptr};

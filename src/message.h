@@ -36,6 +36,11 @@ using message_ptr_t = std::shared_ptr<Message>;
 
 class SystemMessage : public Message {
 public:
+  SystemMessage() {}
+
+  SystemMessage(const std::string& message)
+    :_message(message) {}
+
   virtual const std::string& type() {
     static const std::string _type = "system";
     return _type;

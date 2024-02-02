@@ -25,6 +25,7 @@
 #include "agent.h"
 #include "api_server.h"
 #include "rina.h"
+#include "session.h"
 
 namespace rina {
 
@@ -50,6 +51,23 @@ int run(int argc, char** argv) {
   }
   spdlog::info("init llms success");
 
+  SessionManager* sm = SessionManager::instance();
+  ret = sm->init();
+  if (ret != 0) {
+    spdlog::error("failed to init session manager");
+    return ret;
+  }
+  
+  // init agents
+  auto agent_config = config["agent"];
+  AgentManager* am = AgentManager::instance();
+  ret = am->init(agent_config);
+  if (ret != 0) {
+    spdlog::error("failed to init agent");
+    return ret;
+  }
+  spdlog::info("init agents success");
+
   auto rina_config = config["rina"]; 
   ret = Rina::create(rina_config);
   if (ret != 0) {
@@ -57,16 +75,6 @@ int run(int argc, char** argv) {
     return ret;
   }
   spdlog::info("create rina success");
-
-  // init agents
-  auto agent_config = config["agent"];
-  AgentManager* agents = AgentManager::instance();
-  ret = agents->init(agent_config);
-  if (ret != 0) {
-    spdlog::error("failed to init agent");
-    return ret;
-  }
-  spdlog::info("init agents success");
 
   // init & start api server
   auto api_server_config = config["server"];  
@@ -95,9 +103,14 @@ int run(int argc, char** argv) {
   }
 
   // destroy agents
-  ret = agents->destroy();
+  ret = am->destroy();
   if (ret != 0) {
-    spdlog::warn("failed to destroy agents");
+    spdlog::warn("failed to destroy agent manager");
+  }
+
+  ret = sm->destroy();
+  if (ret != 0) {
+    spdlog::warn("failed to destroy session manager");
   }
 
   // destroy llms

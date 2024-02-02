@@ -18,6 +18,7 @@
 
 #include <spdlog/spdlog.h>
 #include <workflow/HttpMessage.h>
+#include <workflow/HttpUtil.h>
 #include <workflow/WFTaskFactory.h>
 #include <workflow/WFFacilities.h>
 
@@ -125,11 +126,16 @@ int http_post(const std::string& url,
       return;
     }
     
-    const void* body;
-    size_t body_len;
-    task->get_resp()->get_parsed_body(&body, &body_len);
-    ctx->response.assign(static_cast<const char*>(body), body_len);
+    protocol::HttpChunkCursor cursor(task->get_resp());
+    const void* chunk;
+    size_t size;
+    std::string body;
+    while (cursor.next(&chunk, &size)) {
+	    std::string chunk_body = std::string((const char*)chunk, size);
+	    body += chunk_body;
+    }
 
+    ctx->response.swap(body);
     ctx->wait_group.done();
   });
   

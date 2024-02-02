@@ -34,7 +34,7 @@ int LiteAgent::destroy() {
   return 0;
 }
 
-message_ptr_t LiteAgent::chat(message_ptr_t /*msg*/) {
+message_ptr_t LiteAgent::chat(context_ptr_t /*ctx*/, message_ptr_t /*msg*/) {
   if (_llm == nullptr || _memory == nullptr) {
     spdlog::error("agent [{}] not initialized", this->name());
     return message_ptr_t();

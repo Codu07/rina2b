@@ -60,16 +60,22 @@ int Rina::destroy() {
   return 0;
 }
 
-message_ptr_t Rina::chat(message_ptr_t msg) {
+message_ptr_t Rina::chat(context_ptr_t ctx, message_ptr_t msg) {
   if (_llm == nullptr || _memory == nullptr) {
     spdlog::error("LLM or Memory not initialized");
     return nullptr;
   }
 
-  context_ptr_t ctx = std::make_shared<Context>();
-  system_message_ptr_t sys_msg = std::make_shared<SystemMessage>();
-  sys_msg->set(_persona);
-  ctx->set_system_message(sys_msg);
+  if (!ctx) {
+    spdlog::error("none context");
+    return nullptr;
+  }
+
+  if (!ctx->is_initialized()) {
+    system_message_ptr_t sys_msg = std::make_shared<SystemMessage>(_persona);
+    ctx->init(sys_msg);
+    spdlog::info("init context with persona: {}", _persona);
+  }
 
   auto response = _llm->chat(ctx, msg);
   if (!response) {
@@ -77,6 +83,8 @@ message_ptr_t Rina::chat(message_ptr_t msg) {
     return nullptr;
   }
 
+  ctx->append_history(msg);
+  ctx->append_history(response);
   return std::dynamic_pointer_cast<Message>(response);
 }
 

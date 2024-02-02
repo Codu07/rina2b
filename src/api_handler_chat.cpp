@@ -20,6 +20,7 @@
 #include <nlohmann/json.hpp>
 
 #include "agent.h"
+#include "session.h"
 
 namespace rina {
 
@@ -42,7 +43,7 @@ int ChatHandler::handle(const std::string& method,
     return -1;
   }
 
-  std::string session;
+  std::string sid;
   std::string message;
 
   try { 
@@ -51,10 +52,22 @@ int ChatHandler::handle(const std::string& method,
       spdlog::error("failed to parse json data [{}]", data);
       return -1;
     }
-    session = node["session"];
+    sid = node["sid"];
     message = node["message"];
   } catch (const json::exception& e) {
     spdlog::error("failed to parse json data [{}], error [{}]", data, e.what());
+    return -1;
+  }
+
+  SessionManager* sm = SessionManager::instance();
+  session_ptr_t session = sm->get_session(sid);
+  if (!session) {
+    session = sm->new_session();
+    spdlog::info("new session [{}] created", session->sid());
+  }
+
+  if (!session->ctx()) {
+    spdlog::error("session [{}] has no context", session->sid());
     return -1;
   }
 
@@ -68,7 +81,7 @@ int ChatHandler::handle(const std::string& method,
     return -1;
   }
 
-  auto response_message = agent->chat(chat_message);
+  auto response_message = agent->chat(session->ctx(), chat_message);
   if (!response_message) {
     spdlog::error("Failed to chat with agent [Rina2b]");
     return -1;

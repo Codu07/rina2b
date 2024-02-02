@@ -22,6 +22,7 @@
 #include <spdlog/spdlog.h>
 
 #include "memory.h"
+#include "context.h"
 #include "llm.h"
 
 namespace rina {
@@ -48,15 +49,17 @@ public:
     return -1;
   }
 
-  virtual message_ptr_t chat(message_ptr_t msg) {
+  virtual message_ptr_t chat(context_ptr_t ctx, message_ptr_t msg) {
     spdlog::error("agent [{}] not implemented", this->name());
     return nullptr;
   }
 
+  /*
   virtual Message* chat(const Message* msg) {
     spdlog::error("agent [{}] not implemented", this->name());
     return nullptr;
   }
+  */
 
 private:
   std::string _name;

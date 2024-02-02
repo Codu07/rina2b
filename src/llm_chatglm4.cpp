@@ -77,27 +77,24 @@ message_ptr_t ChatGLM4::chat(context_ptr_t ctx, message_ptr_t msg) {
   
   spdlog::info("token: {}", token);
 
-  json req_data;
-  req_data["model"] = "glm-4";
-  req_data["messages"] = json::array();
-  req_data["messages"].push_back(json::object({{"role", "user"}, {"content", prompt}}));
-
-  std::string response;
   std::map<std::string, std::string> headers =
     {{"Content-Type", "application/json"}, {"Authorization", token}};
   std::map<std::string, std::string> params;
-  std::string data = req_data.dump();
-  ret = http_post(MODEL_URL, headers, params, data, &response);
+
+  std::string request;
+  std::string response;
+  this->build_prompt(ctx, msg, &request);
+
+  spdlog::info("request:\n {}", request);
+
+  ret = http_post(MODEL_URL, headers, params, request, &response);
   if (ret != 0) {
     spdlog::warn("http get failed: {}", ret);
     return nullptr;
   }
+  spdlog::info("response:\n {}", response);
 
-  auto response_msg = std::make_shared<ChatMessage>();
-
-  spdlog::info("response: {}", response);
-
-  return nullptr;
+  return this->parse_response(response);
 }
 
 int ChatGLM4::build_prompt(context_ptr_t ctx, message_ptr_t msg, std::string* prompt) {
@@ -107,7 +104,8 @@ int ChatGLM4::build_prompt(context_ptr_t ctx, message_ptr_t msg, std::string* pr
   data["messages"].push_back(json::object({{"role", "system"}, {"content", ctx->system_message()->get()}}));
   for (auto& msg : ctx->history()) {
     if (msg->type() == "chat") {
-      //data["messages"].push_back(json::object({{"role", "user"}, {"content", msg->get()}}));
+      chat_message_ptr_t chat_msg = std::dynamic_pointer_cast<ChatMessage>(msg);
+      data["messages"].push_back(json::object({{"role", chat_msg->role()}, {"content", chat_msg->content()}}));
       continue;
     }
     if (msg->type() == "system") {
@@ -115,12 +113,33 @@ int ChatGLM4::build_prompt(context_ptr_t ctx, message_ptr_t msg, std::string* pr
     }
   }
 
+  if (msg->type() == "chat") {
+    chat_message_ptr_t chat_msg = std::dynamic_pointer_cast<ChatMessage>(msg);
+    data["messages"].push_back(json::object({{"role", chat_msg->role()}, {"content", chat_msg->content()}}));
+  }
+
   prompt->assign(data.dump());
   return 0;
 }
 
-int ChatGLM4::parse_response(const std::string& response, message_ptr_t msg) {
-  return 0;
+message_ptr_t ChatGLM4::parse_response(const std::string& response) {
+  try {
+      json data = json::parse(response);
+
+      json choices = data["choices"];
+      if (!choices.is_array() || choices.size() == 0) {
+          spdlog::error("no choices in response");
+          return nullptr;
+      }
+
+      chat_message_ptr_t chat_msg = std::make_shared<ChatMessage>();
+      json msg = choices[0]["message"];
+      chat_msg->set(msg["role"], msg["content"]);
+      return std::dynamic_pointer_cast<Message>(chat_msg);
+  } catch (const json::exception& e) {
+      spdlog::error("parse response failed: {}", e.what());
+      return nullptr;
+  }
 }
 
 } // namespace rina

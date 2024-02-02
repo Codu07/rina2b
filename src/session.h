@@ -18,13 +18,17 @@
 
 #include <string>
 #include <memory>
-#include <map>
+#include <unordered_map>
+
+#include "context.h"
 
 namespace rina {
 
 class Session {
 public:
-  Session(const std::string& sid) : _sid(sid) {}
+  Session(const std::string& sid) 
+    : _sid(sid),
+      _ctx(std::make_shared<Context>()) {}
 
   ~Session() {}
 
@@ -32,26 +36,38 @@ public:
     return _sid;
   }
 
+  context_ptr_t& ctx() {
+    return _ctx;
+  }
+
 private:
   std::string _sid;
+  context_ptr_t _ctx;
 }; // class Session
 
 using session_ptr_t = std::shared_ptr<Session>;
 
 class SessionManager {
 public:
-  static SessionManager& instance();
+  static SessionManager* instance();
 
 public:
-  ~SessionManager();
+  ~SessionManager() {}
+
+  int init();
+
+  int destroy();
 
   session_ptr_t new_session();
 
   session_ptr_t get_session(const std::string& sid);
 
 private:
-  SessionManager();
+  SessionManager() {}
   SessionManager(const SessionManager&) = delete;
+
+private:
+  std::unordered_map<std::string, session_ptr_t> _sessions;
 }; // class SessionManager
 
 }; // namespace rina

@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "message.h"
 
@@ -29,7 +30,17 @@ public:
 
   ~Context() {}
 
-  system_message_ptr_t system_message() {
+  int init(system_message_ptr_t system_message) {
+    this->set_system_message(system_message);
+    _initialized = true;
+    return 0;
+  }
+
+  bool is_initialized() const {
+    return _initialized;
+  }
+
+  system_message_ptr_t& system_message() {
     return _system_message;
   }
 
@@ -46,6 +57,7 @@ public:
   }
 
 private:
+  bool _initialized {false};
   system_message_ptr_t _system_message;
   std::vector<message_ptr_t> _history; 
 }; // class Context
