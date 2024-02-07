@@ -16,6 +16,7 @@
 
 #include "llm_chatglm4.h"
 
+#include <sstream>
 #include <chrono>
 #include <ctime>
 
@@ -92,9 +93,8 @@ message_ptr_t ChatGLM4::chat(context_ptr_t ctx, message_ptr_t msg) {
     spdlog::warn("http get failed: {}", ret);
     return nullptr;
   }
-  spdlog::info("response:\n {}", response);
 
-  return this->parse_response(response);
+  return this->parse_response(response, true);
 }
 
 int ChatGLM4::build_prompt(context_ptr_t ctx, message_ptr_t msg, std::string* prompt) {
@@ -118,12 +118,14 @@ int ChatGLM4::build_prompt(context_ptr_t ctx, message_ptr_t msg, std::string* pr
     data["messages"].push_back(json::object({{"role", chat_msg->role()}, {"content", chat_msg->content()}}));
   }
 
+  data["stream"] = true;
   prompt->assign(data.dump());
   return 0;
 }
 
-message_ptr_t ChatGLM4::parse_response(const std::string& response) {
-  try {
+message_ptr_t ChatGLM4::parse_response(const std::string& response, bool is_stream) {
+  if (!is_stream) {
+    try {
       json data = json::parse(response);
 
       json choices = data["choices"];
@@ -136,9 +138,28 @@ message_ptr_t ChatGLM4::parse_response(const std::string& response) {
       json msg = choices[0]["message"];
       chat_msg->set(msg["role"], msg["content"]);
       return std::dynamic_pointer_cast<Message>(chat_msg);
-  } catch (const json::exception& e) {
+    } catch (const json::exception& e) {
       spdlog::error("parse response failed: {}", e.what());
       return nullptr;
+    }
+  } else {
+    json data = json::parse(response);
+    if (!data.is_array()) {
+      spdlog::error("invalid response: {}", response);
+      return nullptr;
+    }
+
+    chat_message_ptr_t chat_msg = std::make_shared<ChatMessage>();
+    std::string content;
+    for (auto& msg : data) {
+      auto choices = msg["choices"];
+      auto msg_chunk = choices[0]["delta"];
+      content += msg_chunk["content"];
+      //spdlog::info("message: {}", msg.dump());
+    }
+
+    chat_msg->set("assistant", content);
+    return std::dynamic_pointer_cast<Message>(chat_msg);
   }
 }
 

@@ -17,6 +17,8 @@
 #define RINA_KNOWLEDGE_H
 
 #include <string>
+#include <memory>
+#include <set>
 
 namespace rina {
 
@@ -44,10 +46,17 @@ public:
     _answer = answer; 
   }
 
+  std::set<std::string>& tags() {
+    return _tags;
+  }
+
 private:
   std::string _question;
   std::string _answer;
+  std::set<std::string> _tags;
 }; // class Knowledge
+
+using knowledge_ptr_t = std::shared_ptr<Knowledge>;
 
 } // namespace rina
 

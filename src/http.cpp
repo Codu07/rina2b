@@ -16,7 +16,11 @@
 
 #include "http.h"
 
+#include <sstream>
+
 #include <spdlog/spdlog.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <workflow/HttpMessage.h>
 #include <workflow/HttpUtil.h>
 #include <workflow/WFTaskFactory.h>
@@ -24,11 +28,17 @@
 
 namespace rina {
 
+using json = nlohmann::json;
+
 static const int HTTP_REDIRECT_MAX = 5;
 static const int HTTP_RETRY_MAX = 3;
+static const int RECV_TIMEOUT = 120000;
+//static const int CONNECT_TIMEOUT = 10000;
 
 static const std::string HTTP_METHOD_GET = "GET";
 static const std::string HTTP_METHOD_POST = "POST";
+
+static const std::string HTTP_CHUNK_PREFIX = "data: ";
 
 struct TaskContext {
   int error_code {0};
@@ -104,14 +114,14 @@ int http_post(const std::string& url,
     int state = task->get_state();
     int error = task->get_error();
 
-    spdlog::info("http request state: {}, error: {}", state, error);
+    spdlog::info("http request state: {}", state);
 
     switch (state) {
       case WFT_STATE_SYS_ERROR:
-        spdlog::warn("http system error: {}", state);
+        spdlog::warn("http system error: {}", strerror(error));
         break;
       case WFT_STATE_DNS_ERROR:
-        spdlog::warn("http dns error: {}", state);
+        spdlog::warn("http dns error: {}", gai_strerror(error));
         break;
       case WFT_STATE_SSL_ERROR:
         spdlog::warn("http ssl error: {}", state);
@@ -126,18 +136,60 @@ int http_post(const std::string& url,
     }
     
     protocol::HttpChunkCursor cursor(task->get_resp());
+    std::stringstream ss;
     const void* chunk;
     size_t size;
     std::string body;
     while (cursor.next(&chunk, &size)) {
-	    std::string chunk_body = std::string((const char*)chunk, size);
-	    body += chunk_body;
+      std::string chunk_body = std::string((const char*)chunk, size);
+      ss << chunk_body;
+      spdlog::info("raw body: {}", chunk_body);
+
+      //if (!chunk_body.starts_with(HTTP_CHUNK_PREFIX)) {
+      //  continue;
+      //}
+
+      //std::string chunk_body_without_prefix = chunk_body.substr(HTTP_CHUNK_PREFIX.size());
+      //if (chunk_body_without_prefix.compare("[DONE]") == 0) {
+      //  break;
+      //}
+
+      //spdlog::info("chunk body: {}", chunk_body_without_prefix);
+
+      //json j = json::parse(chunk_body_without_prefix);
+      //body += j["choices"][0]["delta"]["content"];
+	    //body += chunk_body;
     }
 
-    ctx->response.swap(body);
+    std::string chunk_buf;
+    json resp_json;
+    while (getline(ss, chunk_buf)) {
+      if (chunk_buf.empty()) {
+        continue;
+      }
+      if (!chunk_buf.starts_with(HTTP_CHUNK_PREFIX)) {
+        continue;
+      }
+      
+      std::string chunk_body_without_prefix = chunk_buf.substr(HTTP_CHUNK_PREFIX.size());
+      if (chunk_body_without_prefix.compare("[DONE]") == 0) {
+        break;
+      }
+
+      resp_json.push_back(json::parse(chunk_body_without_prefix));
+    }
+
+    spdlog::info("response body: {}", resp_json.dump());
+
+    ctx->response = resp_json.dump();
     ctx->wait_group.done();
   });
-  
+
+  task->set_receive_timeout(RECV_TIMEOUT);
+  //task->set_send_timeout();
+  task->set_wait_timeout(RECV_TIMEOUT);
+  //task->set_watch_timeout();
+
   task->start();
   ctx->wait_group.wait();
   response->swap(ctx->response);
