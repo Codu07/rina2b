@@ -1,13 +1,18 @@
+service:
+  chat_service:
+    port: 8087
+  tool_service:
+    port: 8088
 llm:
   - 
     name: chatglm_default
     type: chatglm4
     path: /Users/bytedance/workspace/rina2b
-    api_key: your_api_key
+    api_key: <API_KEY>
   - 
     name: chatglm4
     type: chatglm4
-    api_key: your_api_key
+    api_key: <API_KEY>
 memory:
   - name: memory_default
     longterm:
@@ -15,6 +20,9 @@ memory:
       path: /Users/bytedance/workspace/rina3b/memory/longterm
     shotterm:
       limit: 50
+tool:
+  - 
+    name: search
 agent:
   - 
     name: default

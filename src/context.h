@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "message.h"
+#include "tool.h"
 
 namespace rina {
 
@@ -56,10 +57,19 @@ public:
     _history.emplace_back(message);
   }
 
+  std::vector<tool_ptr_t>& tools() {
+    return _tools;
+  }
+
+  void add_tool(tool_ptr_t tool) {
+    _tools.emplace_back(tool);
+  }
+
 private:
   bool _initialized {false};
   system_message_ptr_t _system_message;
-  std::vector<message_ptr_t> _history; 
+  std::vector<message_ptr_t> _history;
+  std::vector<tool_ptr_t> _tools;
 }; // class Context
 
 using context_ptr_t = std::shared_ptr<Context>;

@@ -23,9 +23,11 @@
 
 #include "llm.h"
 #include "agent.h"
+#include "tool.h"
 #include "api_server.h"
 #include "rina.h"
 #include "session.h"
+#include "tool_manager.h"
 
 namespace rina {
 
@@ -51,6 +53,17 @@ int run(int argc, char** argv) {
   }
   spdlog::info("init llms success");
 
+  // init tool
+  auto tool_config = config["tool"];
+  ToolManager* tool = ToolManager::instance();
+  ret = tool->init(tool_config);
+  if (ret != 0) {
+    spdlog::error("failed to init tools");
+    return ret;
+  }
+  spdlog::info("init tool success");
+
+  // init session manager
   SessionManager* sm = SessionManager::instance();
   ret = sm->init();
   if (ret != 0) {
@@ -68,6 +81,7 @@ int run(int argc, char** argv) {
   }
   spdlog::info("init agents success");
 
+  // create rina
   auto rina_config = config["rina"]; 
   ret = Rina::create(rina_config);
   if (ret != 0) {

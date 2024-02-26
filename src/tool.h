@@ -18,27 +18,32 @@
 
 #include "configure.h"
 
+#include <map>
+#include <string>
+#include <memory>
+
+#include <nlohmann/json.hpp>
+
 namespace rina {
 
 class Tool {
 public:
-  Tool();
+  Tool() {}
 
-  ~Tool();
+  virtual ~Tool() {}
+
+  virtual int init(const Configure& /*config*/) {
+    return 0;
+  }
+
+  virtual int destroy() {
+    return 0;
+  }
+
+  virtual int exec(nlohmann::json& data) = 0;
 }; // class Tool
 
-class ToolManager {
-public:
-  static ToolManager* getInstance();
-
-  ~ToolManager();
-
-  int init(const Configure& config);
-
-private:
-  ToolManager() {}
-  ToolManager(const ToolManager&) {}
-}; // class ToolManager
+using tool_ptr_t = std::shared_ptr<Tool>;
 
 } // namespace rina
 
